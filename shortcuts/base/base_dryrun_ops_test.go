@@ -117,6 +117,19 @@ func TestDryRunRecordOps(t *testing.T) {
 	assertDryRunContains(t, dryRunRecordDelete(ctx, rt), "DELETE /open-apis/base/v3/bases/app_x/tables/tbl_1/records/rec_1")
 	assertDryRunContains(t, dryRunRecordHistoryList(ctx, rt), "GET /open-apis/base/v3/bases/app_x/record_history", "max_version=11", "page_size=30", "record_id=rec_1", "table_id=tbl_1")
 
+	retrievalRT := newBaseTestRuntime(
+		map[string]string{"base-token": "app_x", "query": "search term"},
+		nil, nil,
+	)
+	assertDryRunContains(t, dryRunRecordRetrieval(ctx, retrievalRT), "POST /open-apis/base/v3/bases/app_x/records/retrieval", `"query":"search term"`)
+
+	retrievalSwitchRT := newBaseTestRuntime(
+		map[string]string{"base-token": "app_x"},
+		map[string]bool{"enable": true},
+		nil,
+	)
+	assertDryRunContains(t, dryRunRecordRetrievalSwitch(ctx, retrievalSwitchRT), "PUT /open-apis/base/v3/bases/app_x/records/retrieval-switch", `"enable":true`)
+
 	uploadAttachmentRT := newBaseTestRuntime(
 		map[string]string{
 			"base-token": "app_x",

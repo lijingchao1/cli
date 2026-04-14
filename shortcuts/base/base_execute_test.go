@@ -1270,6 +1270,78 @@ func TestBaseTableExecuteListFallbackShapes(t *testing.T) {
 	})
 }
 
+func TestBaseRecordExecuteRetrieval(t *testing.T) {
+	factory, stdout, reg := newExecuteFactory(t)
+	retrievalStub := &httpmock.Stub{
+		Method: "POST",
+		URL:    "/open-apis/base/v3/bases/app_x/records/retrieval",
+		Body: map[string]interface{}{
+			"code": 0,
+			"data": map[string]interface{}{
+				"records": []interface{}{
+					map[string]interface{}{"record_id": "rec_1", "score": 0.95},
+				},
+			},
+		},
+	}
+	reg.Register(retrievalStub)
+	if err := runShortcut(t, BaseRecordRetrieval, []string{"+record-retrieval", "--base-token", "app_x", "--query", "test query"}, factory, stdout); err != nil {
+		t.Fatalf("err=%v", err)
+	}
+	if got := stdout.String(); !strings.Contains(got, `"records"`) || !strings.Contains(got, `"rec_1"`) {
+		t.Fatalf("stdout=%s", got)
+	}
+	body := string(retrievalStub.CapturedBody)
+	if !strings.Contains(body, `"query":"test query"`) {
+		t.Fatalf("request body=%s", body)
+	}
+}
+
+func TestBaseRecordExecuteRetrievalSwitch(t *testing.T) {
+	t.Run("enable", func(t *testing.T) {
+		factory, stdout, reg := newExecuteFactory(t)
+		switchStub := &httpmock.Stub{
+			Method: "PUT",
+			URL:    "/open-apis/base/v3/bases/app_x/records/retrieval-switch",
+			Body: map[string]interface{}{
+				"code": 0,
+				"data": map[string]interface{}{"enable": true},
+			},
+		}
+		reg.Register(switchStub)
+		if err := runShortcut(t, BaseRecordRetrievalSwitch, []string{"+record-retrieval-switch", "--base-token", "app_x", "--enable"}, factory, stdout); err != nil {
+			t.Fatalf("err=%v", err)
+		}
+		if got := stdout.String(); !strings.Contains(got, `"enable"`) {
+			t.Fatalf("stdout=%s", got)
+		}
+		body := string(switchStub.CapturedBody)
+		if !strings.Contains(body, `"enable":true`) {
+			t.Fatalf("request body=%s", body)
+		}
+	})
+
+	t.Run("disable", func(t *testing.T) {
+		factory, stdout, reg := newExecuteFactory(t)
+		switchStub := &httpmock.Stub{
+			Method: "PUT",
+			URL:    "/open-apis/base/v3/bases/app_x/records/retrieval-switch",
+			Body: map[string]interface{}{
+				"code": 0,
+				"data": map[string]interface{}{"enable": false},
+			},
+		}
+		reg.Register(switchStub)
+		if err := runShortcut(t, BaseRecordRetrievalSwitch, []string{"+record-retrieval-switch", "--base-token", "app_x", "--enable=false"}, factory, stdout); err != nil {
+			t.Fatalf("err=%v", err)
+		}
+		body := string(switchStub.CapturedBody)
+		if !strings.Contains(body, `"enable":false`) {
+			t.Fatalf("request body=%s", body)
+		}
+	})
+}
+
 func TestBaseRecordExecuteListWithViewPagination(t *testing.T) {
 	factory, stdout, reg := newExecuteFactory(t)
 	reg.Register(&httpmock.Stub{

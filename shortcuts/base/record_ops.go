@@ -112,6 +112,20 @@ func dryRunRecordHistoryList(_ context.Context, runtime *common.RuntimeContext) 
 		Set("base_token", runtime.Str("base-token"))
 }
 
+func dryRunRecordRetrieval(_ context.Context, runtime *common.RuntimeContext) *common.DryRunAPI {
+	return common.NewDryRunAPI().
+		POST("/open-apis/base/v3/bases/:base_token/records/retrieval").
+		Body(map[string]interface{}{"query": runtime.Str("query")}).
+		Set("base_token", runtime.Str("base-token"))
+}
+
+func dryRunRecordRetrievalSwitch(_ context.Context, runtime *common.RuntimeContext) *common.DryRunAPI {
+	return common.NewDryRunAPI().
+		PUT("/open-apis/base/v3/bases/:base_token/records/retrieval-switch").
+		Body(map[string]interface{}{"enable": runtime.Bool("enable")}).
+		Set("base_token", runtime.Str("base-token"))
+}
+
 func validateRecordJSON(runtime *common.RuntimeContext) error {
 	return nil
 }
@@ -225,5 +239,25 @@ func executeRecordDelete(runtime *common.RuntimeContext) error {
 		return err
 	}
 	runtime.Out(map[string]interface{}{"deleted": true, "record_id": runtime.Str("record-id")}, nil)
+	return nil
+}
+
+func executeRecordRetrieval(runtime *common.RuntimeContext) error {
+	body := map[string]interface{}{"query": runtime.Str("query")}
+	data, err := baseV3Call(runtime, "POST", baseV3Path("bases", runtime.Str("base-token"), "records", "retrieval"), nil, body)
+	if err != nil {
+		return err
+	}
+	runtime.Out(data, nil)
+	return nil
+}
+
+func executeRecordRetrievalSwitch(runtime *common.RuntimeContext) error {
+	body := map[string]interface{}{"enable": runtime.Bool("enable")}
+	data, err := baseV3Call(runtime, "PUT", baseV3Path("bases", runtime.Str("base-token"), "records", "retrieval-switch"), nil, body)
+	if err != nil {
+		return err
+	}
+	runtime.Out(data, nil)
 	return nil
 }
