@@ -1309,7 +1309,7 @@ func TestBaseRecordExecuteRetrievalSwitch(t *testing.T) {
 			},
 		}
 		reg.Register(switchStub)
-		if err := runShortcut(t, BaseRecordRetrievalSwitch, []string{"+record-retrieval-switch", "--base-token", "app_x", "--enable"}, factory, stdout); err != nil {
+		if err := runShortcut(t, BaseRecordRetrievalSwitch, []string{"+record-retrieval-switch", "--base-token", "app_x", "--enable", "true"}, factory, stdout); err != nil {
 			t.Fatalf("err=%v", err)
 		}
 		if got := stdout.String(); !strings.Contains(got, `"enable"`) {
@@ -1332,7 +1332,7 @@ func TestBaseRecordExecuteRetrievalSwitch(t *testing.T) {
 			},
 		}
 		reg.Register(switchStub)
-		if err := runShortcut(t, BaseRecordRetrievalSwitch, []string{"+record-retrieval-switch", "--base-token", "app_x", "--enable=false"}, factory, stdout); err != nil {
+		if err := runShortcut(t, BaseRecordRetrievalSwitch, []string{"+record-retrieval-switch", "--base-token", "app_x", "--enable", "false"}, factory, stdout); err != nil {
 			t.Fatalf("err=%v", err)
 		}
 		body := string(switchStub.CapturedBody)

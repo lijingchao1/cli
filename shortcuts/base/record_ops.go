@@ -122,7 +122,7 @@ func dryRunRecordRetrieval(_ context.Context, runtime *common.RuntimeContext) *c
 func dryRunRecordRetrievalSwitch(_ context.Context, runtime *common.RuntimeContext) *common.DryRunAPI {
 	return common.NewDryRunAPI().
 		PUT("/open-apis/base/v3/bases/:base_token/records/retrieval-switch").
-		Body(map[string]interface{}{"enable": runtime.Bool("enable")}).
+		Body(map[string]interface{}{"enable": runtime.Str("enable") == "true"}).
 		Set("base_token", runtime.Str("base-token"))
 }
 
@@ -253,7 +253,7 @@ func executeRecordRetrieval(runtime *common.RuntimeContext) error {
 }
 
 func executeRecordRetrievalSwitch(runtime *common.RuntimeContext) error {
-	body := map[string]interface{}{"enable": runtime.Bool("enable")}
+	body := map[string]interface{}{"enable": runtime.Str("enable") == "true"}
 	data, err := baseV3Call(runtime, "PUT", baseV3Path("bases", runtime.Str("base-token"), "records", "retrieval-switch"), nil, body)
 	if err != nil {
 		return err

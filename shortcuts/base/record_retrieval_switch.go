@@ -18,7 +18,7 @@ var BaseRecordRetrievalSwitch = common.Shortcut{
 	AuthTypes:   authTypes(),
 	Flags: []common.Flag{
 		baseTokenFlag(true),
-		{Name: "enable", Type: "bool", Desc: "enable or disable retrieval", Required: true},
+		{Name: "enable", Desc: "enable or disable retrieval", Required: true, Enum: []string{"true", "false"}},
 	},
 	DryRun: dryRunRecordRetrievalSwitch,
 	Execute: func(ctx context.Context, runtime *common.RuntimeContext) error {

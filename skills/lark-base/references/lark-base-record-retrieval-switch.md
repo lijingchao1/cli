@@ -15,12 +15,12 @@
 # 启用 retrieval
 lark-cli base +record-retrieval-switch \
   --base-token app_xxx \
-  --enable
+  --enable true
 
 # 停用 retrieval
 lark-cli base +record-retrieval-switch \
   --base-token app_xxx \
-  --enable=false
+  --enable false
 ```
 
 ## 参数
@@ -28,7 +28,7 @@ lark-cli base +record-retrieval-switch \
 | 参数 | 必填 | 说明 |
 |------|------|------|
 | `--base-token <token>` | 是 | Base Token |
-| `--enable` | 是 | 布尔值；传 `--enable` 启用，传 `--enable=false` 停用 |
+| `--enable <true\|false>` | 是 | 是否启用 retrieval；必须显式传 `true` 或 `false`，无默认值 |
 
 ## API 入参详情
 
@@ -59,7 +59,7 @@ PUT /open-apis/base/v3/bases/:base_token/records/retrieval-switch
 ## 坑点
 
 - ⚠️ 该操作会影响 Base 的检索行为（写入操作），切换前请确认目标。
-- ⚠️ `--enable` 是布尔标志：不带值默认为 `true`；显式停用需要 `--enable=false`。
+- ⚠️ `--enable` 必须显式传 `true` 或 `false`，不传会被 CLI 拦截，传其他值会被 enum 校验拒绝。
 - ⚠️ 切换后 `+record-retrieval` 的可用性和结果会随之变化。
 
 ## 参考
