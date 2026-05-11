@@ -2,7 +2,7 @@
 
 > **前置条件：** 先阅读 [`../lark-shared/SKILL.md`](../../lark-shared/SKILL.md) 了解认证、全局参数和安全规则。
 
-按语义化查询（semantic query）在 Base 维度上检索记录，返回匹配的记录列表。该接口使用 Base 内置的向量检索能力，适合自然语言描述的查询场景。
+按语义化查询（semantic query）在 Base 维度上发起记录检索任务，返回 `retrieval_id`。该接口使用 Base 内置的向量检索能力，适合自然语言描述的查询场景；检索结果需要继续用 `+record-retrieval-poll` 轮询。
 
 ## 适用场景
 
@@ -16,6 +16,10 @@
 lark-cli base +record-retrieval \
   --base-token app_xxx \
   --query "与合同风险相关的记录"
+
+lark-cli base +record-retrieval-poll \
+  --base-token app_xxx \
+  --retrieval-id 7637482394915802653
 ```
 
 ## 参数
@@ -43,12 +47,14 @@ POST /open-apis/base/v3/bases/:base_token/records/retrieval
 
 ## 返回重点
 
-- 直接返回接口 `data` 字段内容，通常包含命中的记录列表。
+- 发起成功后返回 `retrieval_id`。
+- 使用 `+record-retrieval-poll --retrieval-id <id>` 查询任务状态或最终命中的记录列表。
 
 ## 工作流
 
 1. 调用前请先确认目标 Base 已经启用 retrieval（使用 `+record-retrieval-switch --enable` 启用）。
-2. 未启用时调用该接口可能返回空结果或错误。
+2. 调用本命令发起检索任务，并记录返回的 `retrieval_id`。
+3. 使用 `+record-retrieval-poll` 轮询任务状态和最终结果。
 
 ## 坑点
 
@@ -56,9 +62,11 @@ POST /open-apis/base/v3/bases/:base_token/records/retrieval
 - ⚠️ 需要 Base 级别启用 retrieval 开关；未开启时检索会失效。
 - ⚠️ 检索效果依赖底层索引构建进度，新写入的记录可能未被索引。
 - ⚠️ `--query` 非空，建议提供具体语义描述而非单词。
+- ⚠️ 本命令只发起任务；不要把返回的 `retrieval_id` 当作最终记录结果。
 
 ## 参考
 
+- [lark-base-record-retrieval-poll.md](lark-base-record-retrieval-poll.md) — 轮询语义检索结果
 - [lark-base-record-retrieval-switch.md](lark-base-record-retrieval-switch.md) — 启用 / 停用 retrieval
 - [lark-base-record.md](lark-base-record.md) — record 索引页
 - [lark-base-record-search.md](lark-base-record-search.md) — 关键词搜索记录（按字段精确匹配）

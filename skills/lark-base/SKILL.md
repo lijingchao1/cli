@@ -107,7 +107,7 @@ metadata:
 | `+record-upload-attachment` | 给已有记录上传附件 | [`lark-base-record-upload-attachment.md`](references/lark-base-record-upload-attachment.md) | 附件上传专用链路，不要用 `+record-upsert` / `+record-batch-*` 伪造附件值 |
 | `lark-cli docs +media-download` | 下载 Base 附件文件到本地 | [`../lark-doc/references/lark-doc-media-download.md`](../lark-doc/references/lark-doc-media-download.md) | Base 附件的 `file_token` 从 `+record-get` 返回的附件字段数组里取；**不要用 `lark-cli drive +download`**（对 Base 附件返回 403） |
 | `+record-delete / +record-history-list` | 删除记录，或查询某条记录的变更历史 | [`lark-base-record-delete.md`](references/lark-base-record-delete.md)、[`lark-base-record-history-list.md`](references/lark-base-record-history-list.md) | 删除时用户已明确目标可直接执行并带 `--yes`；历史查询按 `table-id + record-id`，不支持整表扫描；`+record-history-list` 只能串行执行 |
-| `+record-retrieval / +record-retrieval-switch` | 按语义检索记录，或启用/停用 Base 的语义检索能力 | [`lark-base-record-retrieval.md`](references/lark-base-record-retrieval.md)、[`lark-base-record-retrieval-switch.md`](references/lark-base-record-retrieval-switch.md) | 使用 `+record-retrieval` 前需先用 `+record-retrieval-switch --enable` 启用；该能力作用于整个 Base，不支持指定 `table-id` |
+| `+record-retrieval / +record-retrieval-poll / +record-retrieval-switch` | 发起语义检索、轮询检索结果，或启用/停用 Base 的语义检索能力 | [`lark-base-record-retrieval.md`](references/lark-base-record-retrieval.md)、[`lark-base-record-retrieval-poll.md`](references/lark-base-record-retrieval-poll.md)、[`lark-base-record-retrieval-switch.md`](references/lark-base-record-retrieval-switch.md) | 使用 `+record-retrieval` 前需先用 `+record-retrieval-switch --enable` 启用；发起后用返回的 `retrieval_id` 调 `+record-retrieval-poll`；该能力作用于整个 Base，不支持指定 `table-id` |
 
 #### 2.3.4 View 子模块
 
