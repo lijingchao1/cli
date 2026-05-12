@@ -119,6 +119,13 @@ func dryRunRecordRetrieval(_ context.Context, runtime *common.RuntimeContext) *c
 		Set("base_token", runtime.Str("base-token"))
 }
 
+func dryRunRecordRetrievalPoll(_ context.Context, runtime *common.RuntimeContext) *common.DryRunAPI {
+	return common.NewDryRunAPI().
+		GET("/open-apis/base/v3/bases/:base_token/records/retrieval/:retrieval_id").
+		Set("base_token", runtime.Str("base-token")).
+		Set("retrieval_id", runtime.Str("retrieval-id"))
+}
+
 func dryRunRecordRetrievalSwitch(_ context.Context, runtime *common.RuntimeContext) *common.DryRunAPI {
 	return common.NewDryRunAPI().
 		PUT("/open-apis/base/v3/bases/:base_token/records/retrieval-switch").
@@ -245,6 +252,15 @@ func executeRecordDelete(runtime *common.RuntimeContext) error {
 func executeRecordRetrieval(runtime *common.RuntimeContext) error {
 	body := map[string]interface{}{"query": runtime.Str("query")}
 	data, err := baseV3Call(runtime, "POST", baseV3Path("bases", runtime.Str("base-token"), "records", "retrieval"), nil, body)
+	if err != nil {
+		return err
+	}
+	runtime.Out(data, nil)
+	return nil
+}
+
+func executeRecordRetrievalPoll(runtime *common.RuntimeContext) error {
+	data, err := baseV3Call(runtime, "GET", baseV3Path("bases", runtime.Str("base-token"), "records", "retrieval", runtime.Str("retrieval-id")), nil, nil)
 	if err != nil {
 		return err
 	}

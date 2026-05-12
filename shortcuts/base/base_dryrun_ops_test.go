@@ -123,6 +123,12 @@ func TestDryRunRecordOps(t *testing.T) {
 	)
 	assertDryRunContains(t, dryRunRecordRetrieval(ctx, retrievalRT), "POST /open-apis/base/v3/bases/app_x/records/retrieval", `"query":"search term"`)
 
+	retrievalPollRT := newBaseTestRuntime(
+		map[string]string{"base-token": "app_x", "retrieval-id": "7637482394915802653"},
+		nil, nil,
+	)
+	assertDryRunContains(t, dryRunRecordRetrievalPoll(ctx, retrievalPollRT), "GET /open-apis/base/v3/bases/app_x/records/retrieval/7637482394915802653")
+
 	retrievalSwitchRT := newBaseTestRuntime(
 		map[string]string{"base-token": "app_x", "enable": "true"},
 		nil,

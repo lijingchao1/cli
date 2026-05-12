@@ -1278,9 +1278,7 @@ func TestBaseRecordExecuteRetrieval(t *testing.T) {
 		Body: map[string]interface{}{
 			"code": 0,
 			"data": map[string]interface{}{
-				"records": []interface{}{
-					map[string]interface{}{"record_id": "rec_1", "score": 0.95},
-				},
+				"retrieval_id": "7637482394915802653",
 			},
 		},
 	}
@@ -1288,12 +1286,34 @@ func TestBaseRecordExecuteRetrieval(t *testing.T) {
 	if err := runShortcut(t, BaseRecordRetrieval, []string{"+record-retrieval", "--base-token", "app_x", "--query", "test query"}, factory, stdout); err != nil {
 		t.Fatalf("err=%v", err)
 	}
-	if got := stdout.String(); !strings.Contains(got, `"records"`) || !strings.Contains(got, `"rec_1"`) {
+	if got := stdout.String(); !strings.Contains(got, `"retrieval_id"`) || !strings.Contains(got, `"7637482394915802653"`) {
 		t.Fatalf("stdout=%s", got)
 	}
 	body := string(retrievalStub.CapturedBody)
 	if !strings.Contains(body, `"query":"test query"`) {
 		t.Fatalf("request body=%s", body)
+	}
+}
+
+func TestBaseRecordExecuteRetrievalPoll(t *testing.T) {
+	factory, stdout, reg := newExecuteFactory(t)
+	retrievalPollStub := &httpmock.Stub{
+		Method: "GET",
+		URL:    "/open-apis/base/v3/bases/app_x/records/retrieval/7637482394915802653",
+		Body: map[string]interface{}{
+			"code": 0,
+			"data": map[string]interface{}{
+				"status":         2,
+				"status_message": "running",
+			},
+		},
+	}
+	reg.Register(retrievalPollStub)
+	if err := runShortcut(t, BaseRecordRetrievalPoll, []string{"+record-retrieval-poll", "--base-token", "app_x", "--retrieval-id", "7637482394915802653"}, factory, stdout); err != nil {
+		t.Fatalf("err=%v", err)
+	}
+	if got := stdout.String(); !strings.Contains(got, `"status"`) || !strings.Contains(got, `"running"`) {
+		t.Fatalf("stdout=%s", got)
 	}
 }
 
